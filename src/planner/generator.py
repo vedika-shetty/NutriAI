@@ -316,10 +316,24 @@ def build_where_clause(profile: dict) -> str:
         "name NOT LIKE '%crawfish%'",
         "name NOT LIKE '%escargot%'",
 
+        # Standalone bread loaves are not standalone meals (bread stuffing/pudding are fine
+        # because they don't match "Bread, %" — the comma distinguishes loaf vs. dish)
+        "name NOT LIKE 'Bread, %'",
+        # Grape leaves raw/canned are garnishes — stuffed versions remain ("Stuffed grape leaves
+        # with rice" has no comma after "Grape leaves" so it is NOT excluded)
+        "name NOT LIKE 'Grape leaves, %'",
+        # Natto is a fermented soybean side dish, not a standalone meal.
+        # Use two targeted patterns instead of '%natto%' to avoid a false positive:
+        # 'annatto' (a natural food colouring) contains 'natto' as a substring.
+        "name NOT LIKE 'Natto%'",   # "Natto", "Natto, fermented", etc.
+        "name NOT LIKE '% natto%'", # "Japanese natto", "Soy natto", etc.
+
         # Branded restaurant-chain and packaged-food items
         # Pattern 1: ALL-CAPS brand prefix (APPLEBEE'S, BURGER KING, DENNY'S, …)
         "name NOT GLOB '[A-Z][A-Z][A-Z]*'",
-        # Pattern 2: Brand in parentheses suffix ("Cheeseburger (Burger King)")
+        # Pattern 2: McDonald's uses mixed-case (McDONALD'S) — bypasses ALL-CAPS GLOB above
+        "name NOT LIKE '%mcdonald%'",
+        # Pattern 3: Brand in parentheses suffix ("Cheeseburger (Burger King)")
         "name NOT LIKE '%(Burger King)%'",
         "name NOT LIKE '%(McDonalds)%'",
         "name NOT LIKE '%(Wendy%'",
@@ -421,8 +435,13 @@ def build_where_clause(profile: dict) -> str:
             "name NOT LIKE '% with egg%'",     # "Pizza with egg", "Noodles with egg"
             "name NOT LIKE '% egg,%'",         # "Burrito, egg, and cheese"
             "name NOT LIKE '%, egg %'",        # "Sandwich, egg salad"
-            # Steak / meat-cut words mis-tagged in FNDDS composite foods
-            "name NOT LIKE '% steak%'",        # "Beef steak" with wrong food_group
+            # Steak / meat-cut words mis-tagged in FNDDS composite foods.
+            # Two patterns needed: '% steak%' catches names with steak after a space
+            # (e.g. "Salisbury steak", "Pepper steak"); 'Steak%' catches names that
+            # START with "Steak" (e.g. "Steak sandwich or sub", "Steak, NS as to type of meat")
+            # which the leading-space pattern misses.
+            "name NOT LIKE '% steak%'",
+            "name NOT LIKE 'Steak%'",
         ])
 
     # Pork restriction

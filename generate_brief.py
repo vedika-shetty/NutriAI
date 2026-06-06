@@ -440,8 +440,8 @@ def page3(pdf: BriefPDF):
     metrics = [
         ('Metric',                    'Priya',    'Ravi',    'Mei',     'James'),
         ('Generation time',           '3.0 s',    '2.9 s',   '2.1 s',   '2.1 s'),
-        ('Candidate pool size',       '2,321',    '4,232',   '2,269',   '2,790'),
-        ('Diversity (Simpson\'s D)',  '0.816',    '0.871',   '0.798',   '0.834'),
+        ('Candidate pool size',       '2,420',    '4,232',   '2,269',   '2,790'),
+        ('Diversity (Simpson\'s D)',  '0.839',    '0.871',   '0.798',   '0.834'),
         ('Days >= 80% RDA (+)',        '4 / 7',    '0 / 7 *', '1 / 7 *', '0 / 7 *'),
         ('Calorie adherence',         'Avg 95%',  'Avg 97%', 'Avg 91%', 'Avg 94%'),
         ('Days >110% calories',       '0 / 7',    '0 / 7',   '0 / 7',   '0 / 7'),
@@ -506,7 +506,7 @@ def page4(pdf: BriefPDF):
 
     pdf.section_title('DEPLOYMENT & SUBMISSION')
     deploy = [
-        ('Live App URL',      'https://nutriai-bax423.streamlit.app  (Streamlit Community Cloud)'),
+        ('Live App URL',      'https://nutriai-bax423-msba.streamlit.app  (Streamlit Community Cloud)'),
         ('Tech Stack',        'Python 3.13, Streamlit, SQLite, scikit-learn, fpdf2, plotly, bitarray'),
         ('Database',          '13,620 foods  |  nutriai_foods.db  |  ~10 MB SQLite  |  in repo'),
         ('Setup',             'pip install -r requirements.txt  ->  streamlit run app.py'),

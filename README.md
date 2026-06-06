@@ -2,7 +2,7 @@
 
 BAX-423 Final Project · Option A · UC Davis GSM · Spring 2026
 
-**Live app:** https://nutriai-bax423.streamlit.app
+**Live app:** https://nutriai-bax423-msba.streamlit.app
 
 ---
 
@@ -104,15 +104,15 @@ nutriai/
 
 ---
 
-## BAX-423 Techniques implemented
+## ML Techniques implemented
 
-| Technique | Lecture | File |
+| Technique | Concept | File |
 |-----------|---------|------|
-| Sketching (Bloom Filter) | Lecture 4 | `src/ml/bloom_filter.py` |
-| Embeddings | Lecture 6 | `src/ml/embeddings.py` |
-| Recommendation (ANN) | Lecture 7 | `src/ml/embeddings.py` |
-| Ranking | Lecture 8 | `src/ml/ranker.py` |
-| Streaming | Lecture 3 | `src/planner/generator.py` |
+| Sketching (Bloom Filter) | Probabilistic Data Structures | `src/ml/bloom_filter.py` |
+| Embeddings | Nutrient Vector Representations | `src/ml/embeddings.py` |
+| Recommendation (ANN) | Content-Based Filtering | `src/ml/embeddings.py` |
+| Ranking | Multi-Objective Scoring | `src/ml/ranker.py` |
+| Streaming | Real-Time Output | `src/planner/generator.py` |
 
 ---
 

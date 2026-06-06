@@ -269,7 +269,7 @@ def build_where_clause(profile: dict) -> str:
         "name NOT LIKE '%, liver%'",   # fish liver, organ liver
 
         # Exotic / game meats — restrict to common supermarket cuts
-        # (beef, pork, lamb, mutton, chicken, turkey, duck are allowed)
+        # (beef, pork, lamb, mutton, chicken, turkey are allowed)
         "name NOT LIKE '%veal%'",
         "name NOT LIKE '%venison%'",
         "name NOT LIKE '%bison%'",
@@ -278,7 +278,9 @@ def build_where_clause(profile: dict) -> str:
         "name NOT LIKE '%quail%'",
         "name NOT LIKE '%ostrich%'",
         "name NOT LIKE 'Emu%'",         # exotic meat — incorrectly tagged is_vegetarian=1
-        "name NOT LIKE '%goose%'",     # also excludes goose eggs (fine)
+        "name NOT LIKE '%goose%'",
+        "name NOT LIKE '%duck%'",       # not a standard household meat
+        "name NOT LIKE '%turtle%'",     # not a standard household meat
         "name NOT LIKE '%moose%'",
         "name NOT LIKE '%elk%'",       # also catches whelk (exotic shellfish — intended)
         "name NOT LIKE '%wild boar%'",
@@ -378,11 +380,34 @@ def build_where_clause(profile: dict) -> str:
             "name NOT LIKE '%tuna%'",
             "name NOT LIKE '%salmon%'",
             "name NOT LIKE '%anchov%'",
+            "name NOT LIKE '%mussel%'",
+            "name NOT LIKE '%scallop%'",
+            "name NOT LIKE '%clam%'",
             # Survey FNDDS oyster entries are tagged is_vegetarian=1 incorrectly;
             # exclude by name. 'Mushrooms, oyster' starts with 'Mushrooms' so it's safe.
             "name NOT LIKE 'Oysters%'",
             "name NOT LIKE 'Oyster sauce%'",
             "name NOT LIKE 'Dressing with oysters%'",
+            # Meat products mis-tagged as vegetarian/vegan in FNDDS
+            "name NOT LIKE '%pastrami%'",
+            "name NOT LIKE '%prosciutto%'",
+            "name NOT LIKE '%chorizo%'",
+            "name NOT LIKE 'Breakfast meat%'",
+            "name NOT LIKE '%breakfast meat%'",
+        ])
+
+    # Additional egg and animal-product guards for strict vegan
+    if diet == 'vegan':
+        clauses.extend([
+            # Egg-containing FNDDS composite dishes mis-tagged is_vegan=1
+            "name NOT LIKE 'Egg,%'",           # "Egg, scrambled" etc.
+            "name NOT LIKE 'Eggs%'",           # "Eggs Benedict" etc.
+            "name NOT LIKE 'Egg on%'",         # "Egg on a bagel"
+            "name NOT LIKE '% with egg%'",     # "Pizza with egg", "Noodles with egg"
+            "name NOT LIKE '% egg,%'",         # "Burrito, egg, and cheese"
+            "name NOT LIKE '%, egg %'",        # "Sandwich, egg salad"
+            # Steak / meat-cut words mis-tagged in FNDDS composite foods
+            "name NOT LIKE '% steak%'",        # "Beef steak" with wrong food_group
         ])
 
     # Pork restriction

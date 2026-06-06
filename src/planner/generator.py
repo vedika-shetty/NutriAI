@@ -328,6 +328,38 @@ def build_where_clause(profile: dict) -> str:
         "name NOT LIKE 'Natto%'",   # "Natto", "Natto, fermented", etc.
         "name NOT LIKE '% natto%'", # "Japanese natto", "Soy natto", etc.
 
+        # FNDDS survey sub-component items — these record meal components, not standalone foods.
+        # Pattern "X as ingredient in Y" or "X, cooked, as ingredient" applies to 37+ items
+        # (Spinach, cooked, as ingredient / Breakfast meat as ingredient in omelet / etc.)
+        "name NOT LIKE '% as ingredient%'",
+
+        # Condiment spreads and dips — not standalone meals
+        "name NOT LIKE '%yeast extract%'",   # Marmite/Vegemite — condiment spread
+        "name NOT LIKE '%fondue%'",          # Cheese fondue — appetiser dip
+
+        # Bread-adjacent sides/snacks that are not complete meals
+        "name NOT LIKE '%dinner roll%'",
+        "name NOT LIKE 'Rolls, dinner%'",
+        "name NOT LIKE '%pretzel%'",         # hard and soft pretzels
+        "name NOT LIKE 'Breakfast link%'",   # "Breakfast link, pattie, or slice, meatless" — poor description
+
+        # Boxed cold cereals — 108 items with ALL-CAPS brand names embedded mid-string
+        # (GLOB only filters names that START with ALL-CAPS, misses "Cereals, ready-to-eat, BRAND...")
+        # Cooked oatmeal/porridge use different naming ("Oatmeal, cooked") so are unaffected
+        "name NOT LIKE 'Cereals ready-to-eat%'",
+        "name NOT LIKE 'Cereals, ready-to-eat%'",
+
+        # Generic fast-food category (94 items) — separate from branded items caught by GLOB
+        "name NOT LIKE 'Fast foods%'",
+
+        # Dry-roasted seed snacks used as meals (e.g. 471 kcal/100g at 250g serving = 1177 kcal)
+        "name NOT LIKE 'Soybeans, mature seeds, roasted%'",
+        "name NOT LIKE 'Soybeans, mature seeds, dry roasted%'",
+
+        # Pizza variants mis-tagged is_vegan=1
+        "name NOT LIKE 'Mexican pizza%'",
+        "name NOT LIKE 'Dessert pizza%'",
+
         # Branded restaurant-chain and packaged-food items
         # Pattern 1: ALL-CAPS brand prefix (APPLEBEE'S, BURGER KING, DENNY'S, …)
         "name NOT GLOB '[A-Z][A-Z][A-Z]*'",
@@ -423,6 +455,7 @@ def build_where_clause(profile: dict) -> str:
             "name NOT LIKE '%chorizo%'",
             "name NOT LIKE 'Breakfast meat%'",
             "name NOT LIKE '%breakfast meat%'",
+            "name NOT LIKE '%gyro%'",          # lamb/beef sandwich mis-tagged is_vegan=1 and is_vegetarian=1
         ])
 
     # Additional egg and animal-product guards for strict vegan

@@ -29,6 +29,8 @@ STRIP_WORDS = [
     'with meat', 'with pork', 'with chicken', 'with beef', 'with poultry',
     'with added fat', 'no added fat', 'with sauce', 'with gravy',
     'canned', 'in water', 'in oil', 'in brine', 'in juice',
+    # Cold cereal naming artifacts
+    'ready-to-eat', 'ready to eat',
 ]
 PREP_WORDS = {
     'cooked','raw','fresh','frozen','dried','canned','prepared',

@@ -316,6 +316,31 @@ def build_where_clause(profile: dict) -> str:
         "name NOT LIKE '%crawfish%'",
         "name NOT LIKE '%escargot%'",
 
+        # Organ heart — "Chicken, heart, all classes" / "Beef, heart, braised" etc.
+        # Safe: 'Hearts of palm' starts with 'Hearts', not ', heart'; 'Artichoke hearts' has no comma.
+        "name NOT LIKE '%, heart%'",
+
+        # USDA 'Mollusks' category prefix generates misleading descriptions after name cleaning
+        # ("Mollusks, oyster, Pacific, cooked, moist heat" → "Pacific Oyster" → "Oven-baked Pacific Oyster").
+        # Non-Mollusks oysters ("Oysters, steamed", "Oysters, baked or broiled") remain in the pool.
+        "name NOT LIKE 'Mollusks%'",
+
+        # Dips — condiment dips served as standalone meals; existing '% dip' only catches
+        # names ending in " dip" — these two patterns cover all USDA dip naming variants.
+        "name NOT LIKE 'Dip,%'",         # "Dip, bean, original flavor" / "Dip, NFS"
+        "name NOT LIKE '% dip,%'",       # "Ranch dip, regular" / "Spinach dip, yogurt based"
+
+        # Mixed-case brands that bypass the ALL-CAPS GLOB filter
+        "name NOT LIKE '%pillsbury%'",   # Pillsbury refrigerated dough products
+        "name NOT LIKE 'Kraft%'",        # Kraft Foods cheese products
+
+        # USDA candy category — many items tagged 'nut_seed' or 'fruit', bypassing the 'sweet' group filter
+        "name NOT LIKE 'Candies,%'",
+
+        # Frozen yogurt — dessert items that slip through as meals (tagged food_group_tag='other')
+        "name NOT LIKE 'Frozen yogurt%'",
+        "name NOT LIKE 'Frozen yogurts%'",
+
         # Standalone bread loaves are not standalone meals (bread stuffing/pudding are fine
         # because they don't match "Bread, %" — the comma distinguishes loaf vs. dish)
         "name NOT LIKE 'Bread, %'",
@@ -343,14 +368,18 @@ def build_where_clause(profile: dict) -> str:
         "name NOT LIKE '%pretzel%'",         # hard and soft pretzels
         "name NOT LIKE 'Breakfast link%'",   # "Breakfast link, pattie, or slice, meatless" — poor description
 
-        # Boxed cold cereals — 108 items with ALL-CAPS brand names embedded mid-string
-        # (GLOB only filters names that START with ALL-CAPS, misses "Cereals, ready-to-eat, BRAND...")
-        # Cooked oatmeal/porridge use different naming ("Oatmeal, cooked") so are unaffected
+        # Boxed and generic cold cereals — FNDDS uses two naming patterns for these items:
+        #   "Cereals ready-to-eat, BRAND, ..." (108 branded items, ALL-CAPS brand mid-string)
+        #   "Cereal, [flavor/type], ..." (44 generic items all cleaning to plain "Cereal")
+        # Cooked oatmeal/porridge use "Oatmeal, cooked" naming and are unaffected.
         "name NOT LIKE 'Cereals ready-to-eat%'",
         "name NOT LIKE 'Cereals, ready-to-eat%'",
+        "name NOT LIKE 'Cereal,%'",           # generic FNDDS: "Cereal, cooked, NFS" / "Cereal, O's, plain"
 
-        # Generic fast-food category (94 items) — separate from branded items caught by GLOB
-        "name NOT LIKE 'Fast foods%'",
+        # Fast-food items — two naming conventions in USDA:
+        #   "Fast foods, ..." (plural, lowercase s) — caught by '%fast food%' below
+        #   "Fast Food, Pizza Chain, ..." (singular, mixed-case) — NOT caught by 'Fast foods%' alone
+        "name NOT LIKE '%fast food%'",
 
         # Dry-roasted seed snacks used as meals (e.g. 471 kcal/100g at 250g serving = 1177 kcal)
         "name NOT LIKE 'Soybeans, mature seeds, roasted%'",

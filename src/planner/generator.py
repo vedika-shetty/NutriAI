@@ -87,6 +87,20 @@ def build_where_clause(profile: dict) -> str:
         "name NOT LIKE 'Sun-dried%'",           # alternate capitalisation
         "name NOT LIKE 'Tomatoes, sun-dried%'", # USDA SR legacy name
         "name NOT LIKE 'Incaparina%'",          # Central American supplement powder, not a meal
+        "name NOT LIKE 'Cured %'",              # "Cured beef", "Cured ham" — processed/industrial
+        "name NOT LIKE '%, cured'",             # "Beef, cured" USDA pattern
+        "name NOT LIKE '%, cured,%'",           # "Beef, cured, dried"
+        "name NOT LIKE '%dry milk%'",           # industrial ingredient, not a meal
+        "name NOT LIKE 'Milk, dry%'",           # USDA SR Legacy dry milk naming
+        "name NOT LIKE '%milk powder%'",        # powdered milk variants
+        "name NOT LIKE '%cheese product%'",     # processed cheese product (not real cheese)
+        "name NOT LIKE '%cheese spread%'",      # condiment cheese
+        "name NOT LIKE '%kanpyo%'",             # Japanese dried gourd strips — cooking ingredient
+        "name NOT LIKE '%breakfast bar%'",      # granola/date bars not standalone meals
+        "name NOT LIKE '% cereal bar%'",        # cereal bar variants
+        "name NOT LIKE '% fruit bar%'",         # pressed fruit bars
+        "name NOT LIKE '% flour'",              # names ending in " flour" (oat flour, etc.)
+        "name NOT LIKE '%Flour, %'",            # "Flour, wheat, bleached" USDA pattern
         "name NOT LIKE '% bran, crude'",        # raw unprocessed bran — not a standalone meal
         "name NOT LIKE '%Gums, seed%'",         # industrial food gums, not meals
         "name NOT LIKE '%freeze-dried%'",       # dehydrated concentrate — too calorie-dense at meal portions
@@ -344,7 +358,8 @@ def build_where_clause(profile: dict) -> str:
     diet = profile.get('diet_mode', 'non-vegetarian').lower().replace('_', '-')
     if diet == 'vegan':
         clauses.append('is_vegan=1')
-        clauses.append("food_group_tag NOT IN ('fish_seafood','meat')")
+        clauses.append('is_vegetarian=1')  # vegan is a strict subset of vegetarian — belt-and-suspenders
+        clauses.append("food_group_tag NOT IN ('fish_seafood','meat','egg')")
     elif diet == 'vegetarian':
         clauses.append('is_vegetarian=1')
         # Vegetarian: no meat, no fish/seafood. Eggs and dairy are permitted.

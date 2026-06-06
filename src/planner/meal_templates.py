@@ -25,6 +25,10 @@ STRIP_WORDS = [
     'grade a', 'grade b', 'usda choice', 'usda select',
     'boneless', 'skinless', 'drained', 'dehydrated',
     'meatless', 'ns as to fat content', 'fat added',
+    # USDA composite dish qualifiers — strip these so "Pinto beans, with meat" → "Pinto beans"
+    'with meat', 'with pork', 'with chicken', 'with beef', 'with poultry',
+    'with added fat', 'no added fat', 'with sauce', 'with gravy',
+    'canned', 'in water', 'in oil', 'in brine', 'in juice',
 ]
 PREP_WORDS = {
     'cooked','raw','fresh','frozen','dried','canned','prepared',
@@ -155,8 +159,8 @@ _TEMPLATES = {
         "Creamy {ingredient} parfait with homemade granola, fresh blueberries, and a drizzle of honey",
         "Smooth {ingredient} bowl layered with rolled oats, sliced kiwi, and toasted pumpkin seeds",
         "Chilled {ingredient} with seasonal stone fruit, chia seeds, and a pinch of cardamom",
-        "Warm {ingredient} with roasted figs, walnuts, and a light drizzle of raw honey",
-        "{ingredient} lassi with fresh mango, a pinch of cardamom, and toasted almonds",
+        "Warm {ingredient} with roasted figs, walnuts, and a light drizzle of honey",
+        "Chilled {ingredient} with fresh mango, a pinch of cardamom, and toasted almonds",
     ],
     ('nut_seed', 'breakfast'): [
         "Toasted {ingredient} butter on rice cakes with sliced banana and a dusting of cinnamon",
@@ -173,17 +177,17 @@ _TEMPLATES = {
         "Pan-tossed {ingredient} with mustard seeds, curry leaves, and grated coconut",
     ],
     ('mixed_dish', 'breakfast'): [
-        "Warm {ingredient} bowl with sauteed greens, sesame seeds, and a side of sliced avocado",
-        "Breakfast {ingredient} with roasted cherry tomatoes, fresh coriander, and lime wedge",
-        "Hearty {ingredient} with warm flatbread, sliced cucumber, and fresh mint chutney",
-        "Savoury {ingredient} with turmeric-roasted cauliflower and a cooling tahini dip",
-        "Light {ingredient} bowl with toasted seeds, fresh seasonal fruit, and oat milk",
+        "Warm {ingredient} bowl with sauteed greens, sesame seeds, and sliced avocado",
+        "Savoury {ingredient} with roasted cherry tomatoes, fresh coriander, and a squeeze of lemon",
+        "Spiced {ingredient} with turmeric-roasted sweet potato and cooling mint yogurt",
+        "{ingredient} shakshuka-style with poached eggs, warm flatbread, and fresh herbs",
+        "Hearty {ingredient} with wilted baby spinach, pickled cucumber, and whole-grain toast",
     ],
     ('other', 'breakfast'): [
-        "Nourishing {ingredient} bowl with toasted seeds, fresh seasonal fruit, and oat milk",
+        "Nourishing {ingredient} bowl with toasted seeds, sliced banana, and a drizzle of honey",
         "Warm {ingredient} with sliced avocado, micro herbs, and a sprinkle of dukkah",
-        "{ingredient} breakfast bowl with house granola, banana slices, and a drizzle of honey",
-        "{ingredient} with coconut yogurt, roasted fruit compote, and toasted pumpkin seeds",
+        "{ingredient} bowl with mixed berries, rolled oats, and a spoonful of almond butter",
+        "{ingredient} with plain yogurt, seasonal fruit, and toasted pumpkin seeds",
     ],
 
     # ── LUNCH ────────────────────────────────────────────────────────────────
@@ -244,16 +248,18 @@ _TEMPLATES = {
         "{ingredient} and roasted beetroot grain bowl with avocado slices and herb dressing",
     ],
     ('mixed_dish', 'lunch'): [
-        "Hearty {ingredient} with a fresh herb garnish, crisp side salad, and gluten-free bread",
-        "Spiced {ingredient} with roasted cauliflower florets, fresh coriander, and mint chutney",
+        "Spiced {ingredient} with roasted cauliflower, fresh coriander, and cooling mint chutney",
         "Warm {ingredient} bowl with steamed greens, sesame oil, and a lemon-ginger dressing",
-        "{ingredient} with pickled cucumber, fresh mint, and a side of brown rice",
+        "{ingredient} with pickled cucumber, fresh mint, and steamed brown rice",
+        "Herb-roasted {ingredient} with a crisp green salad, lemon dressing, and warm flatbread",
+        "Thai-style {ingredient} with jasmine rice, fresh basil, lime, and sliced cucumber",
     ],
     ('other', 'lunch'): [
         "Nourishing {ingredient} bowl with roasted seasonal vegetables, tahini, and fresh herbs",
         "Warm {ingredient} with steamed broccolini, brown rice, and a lemon-ginger dressing",
         "{ingredient} with spiced roasted vegetables, fresh coriander chutney, and warm flatbread",
-        "Herb-dressed {ingredient} with mixed leaves, toasted seeds, and a balsamic reduction",
+        "Herb-dressed {ingredient} with mixed leaves, toasted seeds, and a balsamic dressing",
+        "Mexican-style {ingredient} bowl with black beans, avocado, pico de gallo, and lime",
     ],
 
     # ── DINNER ───────────────────────────────────────────────────────────────
@@ -296,10 +302,12 @@ _TEMPLATES = {
     ],
     ('mixed_dish', 'dinner'): [
         "Slow-simmered {ingredient} with aromatic whole spices, fluffy basmati rice, and fresh mint",
-        "Warming {ingredient} with coconut milk, fresh coriander, steamed greens, and jasmine rice",
-        "Oven-baked {ingredient} with roasted root vegetables and a fragrant herb dressing",
+        "Warming {ingredient} with light coconut broth, fresh coriander, and steamed jasmine rice",
+        "Oven-baked {ingredient} with roasted root vegetables and a fresh herb dressing",
         "Spiced {ingredient} with caramelised onions, warm flatbread, and cooling mint chutney",
         "{ingredient} with roasted seasonal vegetables, lemon-herb tahini, and herbed quinoa",
+        "Italian-style {ingredient} with sauteed garlic, cherry tomatoes, fresh basil, and pasta",
+        "Moroccan {ingredient} with preserved lemon, olives, herbed couscous, and harissa",
     ],
     ('dairy', 'dinner'): [
         "Baked {ingredient} and roasted vegetable gratin with fresh thyme, garlic, and a garden salad",

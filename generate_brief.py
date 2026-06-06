@@ -21,7 +21,7 @@ C_BLACK = (15,  23,  42)
 C_TEAL  = (13, 148, 136)
 
 
-def s(text: str, n: int = 300) -> str:
+def s(text: str, n: int = 2000) -> str:
     """Latin-1-safe string, capped at n chars."""
     return (str(text or '')
             .replace('—', '-').replace('–', '-')
@@ -171,7 +171,7 @@ def page1(pdf: BriefPDF):
         ('Diet modes',           '4 (vegan, vegetarian, pescat., omni)'),
         ('BAX-423 techniques',   '5 of 5 applicable'),
         ('Generation time',      '2-3 s end-to-end'),
-        ('Diversity index',      '0.78-0.87 (Simpson\'s D)'),
+        ('Diversity index',      '0.73-0.84 (Simpson\'s D)'),
         ('Personas passing',     '4 / 4  (all 6 checks)'),
     ]
     pdf.set_font('Helvetica', 'B', 7.5)
@@ -264,7 +264,7 @@ def page2(pdf: BriefPDF):
             'bench': [
                 ('Adaptive iterations per plan',          '21  (gap vector recalculated after every meal)'),
                 ('Candidates retrieved per slot',         '120  (cosine ANN from candidate pool)'),
-                ('Pool sizes (typical)',                  '2,600 (Priya) to 4,500 (Ravi)'),
+                ('Pool sizes (typical)',                  '1,782 (Mei) to 3,805 (Ravi)'),
                 ('Coverage vs fixed-gap baseline',        'Adaptive: 4/7 RDA days (Priya) vs 0/7 fixed'),
             ],
         },
@@ -354,31 +354,36 @@ def page3(pdf: BriefPDF):
         ('James',  52, 'M', 2000, 'Pescatarian', 'Hypertension', 'Soy', 'Potassium, Mg, Omega-3', 88),
     ]
     cw = (pdf._epw - 3) / 2
+    card_top_y = pdf.get_y()
     for i, (name, age, sex, kcal, diet, cond, allerg, prio, wt) in enumerate(personas):
-        if i % 2 == 0:
+        col = i % 2
+        if col == 0:
+            card_top_y = pdf.get_y()
+            if i > 0:
+                card_top_y += 2
             x0 = pdf.l_margin
         else:
             x0 = pdf.l_margin + cw + 3
-        y0 = pdf.get_y()
-        if i % 2 == 0 and i > 0:
-            y0 += 2
-        pdf.set_xy(x0, y0)
+        # Header
+        pdf.set_xy(x0, card_top_y)
         pdf.set_fill_color(*C_NAVY)
         pdf.set_text_color(*C_WHITE)
         pdf.set_font('Helvetica', 'B', 8)
-        pdf.cell(cw, 5.5, s(f'  {name}  ({age}y {sex}, {kcal} kcal)'), fill=True)
+        pdf.cell(cw, 5.5, s(f'  {name}  ({age}y {sex}, {kcal} kcal)'), fill=True, ln=0)
         pdf.set_text_color(*C_BLACK)
-        pdf.ln(5.5)
+        # Data rows — explicitly position each row to avoid Y-advance issues
         rows = [('Diet', diet), ('Condition', cond), ('Allergen', allerg),
                 ('Priority Micros', prio), ('Weight / Protein floor', f'{wt} kg  =>  >{0.7*wt:.0f} g/day protein')]
+        row_y = card_top_y + 5.5
         for k, v in rows:
-            pdf.set_x(x0)
+            pdf.set_xy(x0, row_y)
             pdf.set_font('Helvetica', 'B', 6.8)
-            pdf.cell(cw * 0.36, 3.8, s(k + ':'))
+            pdf.cell(cw * 0.36, 3.8, s(k + ':'), ln=0)
             pdf.set_font('Helvetica', '', 6.8)
-            pdf.cell(cw * 0.64, 3.8, s(v), ln=(i % 2 == 1 or k == rows[-1][0]))
-        if i % 2 == 0:
-            pdf.set_xy(x0 + cw + 3, y0)
+            pdf.cell(cw * 0.64, 3.8, s(v), ln=0)
+            row_y += 3.8
+        if col == 1 or i == len(personas) - 1:
+            pdf.set_y(row_y)
     pdf.ln(3)
 
     # 6-capability pass/fail grid
@@ -406,7 +411,7 @@ def page3(pdf: BriefPDF):
          ['PASS', 'PASS', 'PASS', 'PASS']),
         ('C4  Diversity Engine',
          'No food repeated; Simpson\'s D >= 0.70',
-         ['0.816', '0.871', '0.798', '0.834']),
+         ['0.834', '0.816', '0.730', '0.839']),
         ('C5  Macro & Micro Analysis',
          '21 nutrients tracked; RDA gaps flagged at 80%',
          ['PASS', 'PASS', 'PASS', 'PASS']),
@@ -440,15 +445,15 @@ def page3(pdf: BriefPDF):
     metrics = [
         ('Metric',                    'Priya',    'Ravi',    'Mei',     'James'),
         ('Generation time',           '3.0 s',    '2.9 s',   '2.1 s',   '2.1 s'),
-        ('Candidate pool size',       '2,420',    '4,232',   '2,269',   '2,790'),
-        ('Diversity (Simpson\'s D)',  '0.839',    '0.871',   '0.798',   '0.834'),
+        ('Candidate pool size',       '1,960',    '3,805',   '1,782',   '2,480'),
+        ('Diversity (Simpson\'s D)',  '0.834',    '0.816',   '0.730',   '0.839'),
         ('Days >= 80% RDA (+)',        '4 / 7',    '0 / 7 *', '1 / 7 *', '0 / 7 *'),
         ('Calorie adherence',         'Avg 95%',  'Avg 97%', 'Avg 91%', 'Avg 94%'),
         ('Days >110% calories',       '0 / 7',    '0 / 7',   '0 / 7',   '0 / 7'),
         ('Iron >= 80% RDA daily',     'PASS 6/7', '-',       '-',       '-'),
         ('Fiber >= 25g/day',          '-',        '-',       '3-5 / 7', '-'),
         ('Potassium >= 80% RDA',      '-',        '-',       '-',       '4 / 7'),
-        ('Sodium <= 1500mg/day',      '-',        '-',       '-',       '2 / 7 **'),
+        ('Sodium <= 1500mg/day',      '-',        '-',       '-',       '0 / 7 **'),
     ]
 
     pdf.set_font('Helvetica', '', 7)
